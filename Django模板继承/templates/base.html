@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+    .page-header {
+      height: 50px;
+      background-color: yellow;
+    }
+    .page-body .menu {
+      height: 500px;
+      background-color: red;
+      float: left;
+      width: 20%;
+    }
+    .page-body .content {
+      height: 500px;
+      background-color: blue;
+      float: left;
+      width: 80%;
+    }
+    .page-footer {
+      height: 30px;
+      background-color: black;
+      clear: both;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div class="page-header"></div>
+    <div class="page-body">
+      <div class="menu">
+        <a href="/ordered/">订单</a>
+        <a href="/shopping_car/">购物车</a>
+      </div>
+      <!-- 传值 -->
+      <div class="content">
+        {% block content %}
+          <div style="color: red">lp</div>
+        {% endblock %}
+      </div>
+<!--       <div class="content">
+  购物车
+</div> -->
+      <h1>Welcome</h1>
+      {% block name %}
+
+      {% endblock %}
+
+      
+    </div>
+    <div class="page-footer"></div>
+  </div>
+</body>
+</html>

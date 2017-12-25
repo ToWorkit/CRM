@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body>
+  <h1>Hello World</h1>
+  <!-- 取第 2 个值 -->
+  <!-- <h2>{{list.2}}</h2> -->
+  <!-- <h2>{{obj.username}}</h2> -->
+
+  <!-- 可以直接使用时间的属性 -->
+  <!-- <h2>{{obj.year}}</h2> -->
+
+  <h2>{{obj.age}}</h2>
+
+  {% if False%}
+    <p>lp</p>
+  {% elif obj %}
+    <p>{{obj.name}}</p>
+  {% endif %}
+
+  <!-- 过滤器 -->
+   <!-- {{obj | upper}}  大写  -->
+
+  <!-- 时间格式  不能带有空格-->
+  <!-- {{obj|date:'Y-m-d'}} -->
+
+  <!-- 渲染标签 -->
+  {{obj|safe}}
+</body>
+</html>
+
