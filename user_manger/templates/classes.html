@@ -1,0 +1,137 @@
+{% extends "layout.html" %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block content %}
+  <h1>班级管理</h1>
+  <div>
+    <input type="button" id="id_add" value="添加" />
+    <a href="/add_classes.html">添加</a>
+  </div>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>标题</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in cls_list %}
+        <tr>
+          <td>{{ item.id }}</td>
+          <td>{{ item.caption }}</td>
+          <td>
+            <a href="javascript:;">编辑</a> |
+            <a href="javascript:;" class="td-delete">删除</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
+  <!-- 分页 -->
+  <div class="pagination">
+    <!-- safe 渲染html -->
+    {{ str_pager|safe }}
+  </div>
+
+  <!-- 添加 -->
+  <div class="modal hide">
+    <form action="/classes.html" method="post">
+      <input name="caption" type="text" placeholder="标题" />
+      <input id="id_modal_cancel" type="button" value="取消" />
+      <input type="submit" value="Form提交" />
+      <input type="button" id="modal_ajax_submit" value="AJAX提交" />
+    </form>
+  </div>
+  <div class="shade hide"></div>
+
+  <div class="remove hide">
+    <input id="id_remove_cancel" type="button" value="取消" />
+    <input type="button" value="确定" />
+  </div>
+  <div class="shade hide"></div>
+{% endblock %}
+
+{% block js %}
+  <script>
+    $(function() {
+      $('#menu_class').addClass('active');
+      bindAddEvent();
+      bindCancelEvent();
+      bindTdDeleteEvent();
+      bindSubmitModal();
+    })
+    // 遮罩层
+    function bindAddEvent() {
+      $('#id_add').click(() => {
+        $('.modal,.shade').removeClass('hide')
+      })
+    }
+    // 添加 -> 取消
+    function bindCancelEvent() {
+      $('#id_modal_cancel, #id_remove_cancel').click(() => {
+        $('.modal, .shade, .remove').addClass('hide')
+      })
+    }
+    // 操作 -> 删除
+    function bindTdDeleteEvent() {
+      /*$('td .td-delete').click(() => {
+        $('.remove, .shade').removeClass('hide')
+      })*/
+      $('tbody').on('click', '.td-delete', () => {
+        $('.remove, .shade').removeClass('hide')
+      })
+    }
+    // 操作 -> ajax提交
+    function bindSubmitModal() {
+      $('#modal_ajax_submit').click(() => {
+        // 找到caption
+        var value = $('.modal input[name="caption"]').val()
+        // console.log(value)
+        $.ajax({
+          url: '/classes.html',
+          type: 'POST',
+          data: {caption: value},
+          dataType: 'JSON',
+          success: function (rep) {
+            console.log(typeof rep)
+            if(!rep.status){
+              alert(rep.error)
+            } else {
+               // 追加数据
+              var tr = document.createElement('tr'),
+                td1 = document.createElement('td'),
+                td2 = document.createElement('td'),
+                td3 = document.createElement('td');
+              td1.innerText = rep.data.id
+              td2.innerText = rep.data.caption
+              td3.innerText = "|";
+              var a1 = document.createElement('a');
+              a1.innerHTML = '编辑';
+              var a2 = document.createElement('a');
+              a2.innerHTML = '删除';
+              a2.className = 'td-delete';
+              // 往前加
+              $(td3).prepend(a1);
+              // 追加
+              $(td3).append(a2);
+
+              $(tr).append(td1);
+              $(tr).append(td2);
+              $(tr).append(td3);
+
+              $('table tbody').append(tr);
+              $('input[name="caption"]').innerText = '';
+              $('.modal input[name="caption"]').val('')
+              $('.modal, .shade').addClass('hide');
+            }
+          }
+        })
+      })
+    }
+  </script>
+{% endblock %}
