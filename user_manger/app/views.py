@@ -89,11 +89,12 @@ class Login(views.View):
             return rep
         else:
             message = "用户名或密码错误"
-            # return render(request,'login.html', {'msg': message})
+            return render(request,'login.html', {'msg': message})
 
 
 # FBV -> 函数方式
 # session
+'''
 def login(request):
     message = ""
     # v = request.session
@@ -112,7 +113,8 @@ def login(request):
         else:
             message = "用户名或密码错误"
     obj = render(request,'login.html', {'msg': message})
-    return obj
+    # return obj
+'''
 
 def logout(request):
     request.session.clear()
@@ -184,15 +186,36 @@ def handle_classes(request):
     else:
       response_dict['status'] = False
       response_dict['error'] = '标题不能为空'
-    # json格式
+    # json格式 -> ajax返回数据前端作处理
     return HttpResponse(json.dumps(response_dict))
 
 @auth
 def handle_add_classes(request):
+  message = ''
   if request.method == 'GET':
-    pass
+    return render(request, 'add_classes.html', {'msg': message})
   elif request.method == 'POST':
-    pass
+    caption = request.POST.get('caption', None)
+    if caption:
+      models.Classes.objects.create(caption=caption)
+    else:
+      message = '标题不能为空'
+      return render(request, 'add_classes.html', {'msg': message})
+    return redirect('classes.html')
+  else:
+    return redirect('/index.html')
+
+@auth
+def handle_edit_classes(request):
+  if request.method == 'GET':
+    nid = request.GET.get('nid')
+    obj = models.Classes.objects.filter(id=nid).first()
+    return render(request, 'edit_classes.html', {'obj': obj})
+  elif request.method == 'POST':
+    nid = request.POST.get('nid')
+    caption = request.POST.get('caption')
+    models.Classes.objects.filter(id=nid).update(caption=caption)
+    return redirect('/classes.html')
   else:
     return redirect('/index.html')
 

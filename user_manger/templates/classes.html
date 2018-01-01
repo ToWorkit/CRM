@@ -21,11 +21,10 @@
     <tbody>
       {% for item in cls_list %}
         <tr>
-          <td>{{ item.id }}</td>
-          <td>{{ item.caption }}</td>
+          <td _value="id">{{ item.id }}</td>
+          <td _value="caption">{{ item.caption }}</td>
           <td>
-            <a href="javascript:;">编辑</a> |
-            <a href="javascript:;" class="td-delete">删除</a>
+            <a class="td-edit">编辑</a> | <a target="_blank" href="/edit_classes.html?nid={{ item.id }}">跳转编辑</a> | <a class="td-delete">删除</a>
           </td>
         </tr>
       {% endfor %}
@@ -41,7 +40,9 @@
   <!-- 添加 -->
   <div class="modal hide">
     <form action="/classes.html" method="post">
+      <input type="text" name="id" class="hide" />
       <input name="caption" type="text" placeholder="标题" />
+      
       <input id="id_modal_cancel" type="button" value="取消" />
       <input type="submit" value="Form提交" />
       <input type="button" id="modal_ajax_submit" value="AJAX提交" />
@@ -65,10 +66,15 @@
       bindTdDeleteEvent();
       bindSubmitModal();
     })
+
+    // 请求url -> 针对不同操作的同一ui界面
+    SUBMIT_URL = null;
+
     // 遮罩层
     function bindAddEvent() {
       $('#id_add').click(() => {
         $('.modal,.shade').removeClass('hide')
+        SUBMIT_URL = '/classes.html';
       })
     }
     // 添加 -> 取消
@@ -86,16 +92,38 @@
         $('.remove, .shade').removeClass('hide')
       })
     }
+    // 操作 -> 编辑
+/*    function handleUpdate() {
+      Models.classes.objects.filter(id=11).update(caption='sss')
+    }*/
+
+    // 操作 -> 编辑
+    function bindTdEditEvent() {
+      $('tbody').on('click', '.td-edit', () => {
+        $('.modal,.shade').removeClass('hide');
+        SUBMIT_URL = '/edit_classes.html';
+        // 父级的所有兄弟
+        $(this).parent().prevAll().each(() => {
+          let text = $(this).text(),
+              name = $(this).attr('_value')
+          $('.modal input[name="' + name + '"]').val(text);
+        })
+      })
+    }
+    
+
     // 操作 -> ajax提交
     function bindSubmitModal() {
       $('#modal_ajax_submit').click(() => {
+        // 编辑状态下找到 nid
+        let nid = $('.modal input[name="id"]').val()
         // 找到caption
         var value = $('.modal input[name="caption"]').val()
         // console.log(value)
         $.ajax({
-          url: '/classes.html',
+          url: SUBMIT_URL,
           type: 'POST',
-          data: {caption: value},
+          data: {caption: value, id: nid},
           dataType: 'JSON',
           success: function (rep) {
             console.log(typeof rep)
@@ -125,7 +153,8 @@
               $(tr).append(td3);
 
               $('table tbody').append(tr);
-              $('input[name="caption"]').innerText = '';
+              // $('input[name="caption"]').innerText = '';
+              // 清空值
               $('.modal input[name="caption"]').val('')
               $('.modal, .shade').addClass('hide');
             }
