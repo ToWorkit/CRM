@@ -34,4 +34,5 @@ urlpatterns = [
     url(r'^edit_classes.html$', views.handle_edit_classes),
     url(r'^student.html$', views.handle_student),
     url(r'^teacher.html$', views.handle_teacher),
+    url(r'^add_student.html$', views.add_student)
 ]

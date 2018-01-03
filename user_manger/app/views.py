@@ -219,13 +219,37 @@ def handle_edit_classes(request):
   else:
     return redirect('/index.html')
 
+@auth # 使用装饰器验证是否登录
+def add_student(request):
+  if request.method == 'GET':
+    # 取班级表前20条数据
+    cls_list = models.Classes.objects.all()[0:20]
+    return render(request, 'add_student.html', {'cls_list': cls_list})
+  elif request.method == 'POST':
+    name = request.POST.get('name')
+    email = request.POST.get('email')
+    cls_id = request.POST.get('cls_id')
+    models.Student.objects.create(name=name, email=email, cls_id=cls_id)
+    return redirect('/student.html')
+
+@auth
 def handle_student(request):
-    is_login = request.session.get('is_login')
-    if is_login:
-        current_user = request.session.get('username')
-        return render(request, 'student.html', {'username': current_user})
+    if request.method == 'GET':
+      # for i in range(10):
+      #   # print(i)
+      #   models.Student.objects.create(
+      #     name = "root" + str(i),
+      #     email = 'root' + str(i) + '@qq.com',
+      #     cls_id = str(int(i) + 1)
+      #     )
+      result = models.Student.objects.all()
+      current_user = request.session.get('username')
+      return render(request, 'student.html', {'username': current_user,'result': result})
+    elif request.method == "POST":
+        return redirect('/index.html')
     else:
-        return redirect('/login.html')
+        return redirect('/index.html')
+
 
 
 def handle_teacher(request):

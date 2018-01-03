@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block css %}
+{% endblock %}
+
+{% block content %}
+  <h1>创建学生</h1>
+  <form action="/add_student.html" method="POST">
+    <p>
+      <input type="text" placeholder="大名" name="name" />
+    </p>
+    <p>
+      <input type="text" placeholder="邮箱" name="email" />
+    </p>
+    <p>
+      <select name="cls_id" id="">
+        {% for op in cls_list %}
+          <option value="{{ op.id }}">{{ op.caption }}</option>
+        {% endfor %}
+      </select>
+    </p>
+    <input type="submit" value="提交" />
+  </form>
+{% endblock %}
+
+{% block js %}
+{% endblock %}
