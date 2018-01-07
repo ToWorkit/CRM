@@ -21,5 +21,61 @@
 {% endblock %}
 
 {% block js %}
+    <script>
+        $(function () {
+            bindProvinceEvent();
+            bindCityEvent()
+        });
+        
+        function bindCityEvent() {
+            $('#city').change(function () {
+                var v = $(this).val();
+                if (v == "-1"){
 
+                }else{
+                    $('#xian option:gt(0)').remove();
+                    $.ajax({
+                        url: '/fetch_xian.html',
+                        type: 'GET',
+                        data: {'city_id': v},
+                        dataType: 'json',
+                        success:function (arg) {
+                            $.each(arg, function(k,v){
+                                var tag = document.createElement('option');
+                                tag.innerHTML = v.name;
+                                tag.setAttribute('value', v.id);
+                                $('#xian').append(tag);
+                            });
+                        }
+                    })
+                }
+            })
+        }
+        
+        function bindProvinceEvent(){
+            $('#province').change(function () {
+                var v = $(this).val();
+                if(v == '-1'){
+
+                }else{
+                    $('#city option:gt(0)').remove();
+                    $('#xian option:gt(0)').remove();
+                    $.ajax({
+                        url: '/fetch_city.html',
+                        type: 'GET',
+                        data: {'province_id': v},
+                        dataType: 'json',
+                        success: function (arg) {
+                            $.each(arg, function(k,v){
+                                var tag = document.createElement('option');
+                                tag.innerHTML = v.name;
+                                tag.setAttribute('value', v.id);
+                                $('#city').append(tag);
+                            });
+                        }
+                    })
+                }
+            })
+        }
+    </script>
 {% endblock %}

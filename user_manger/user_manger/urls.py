@@ -37,4 +37,6 @@ urlpatterns = [
     url(r'^add_student.html$', views.add_student),
     url(r'^edit_student.html$', views.edit_student),
     url(r'^menu.html$', views.menu),
+    url(r'^fetch_city.html$', views.fetch_city),
+    url(r'^fetch_xian.html$', views.fetch_xian),
 ]

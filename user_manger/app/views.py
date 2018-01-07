@@ -279,9 +279,31 @@ def handle_teacher(request):
         return redirect('/login.html')
 
 # menu
-def meun(request):
-  for i in range(10):
-    models.Province.objects.create(name="陕西_" + str(i))
-  for i in range(5):
-    models.City.objects.create(name="西安_" + str(i))
-  return HttpResponse('OK')
+def menu(request):
+  # for i in range(10):
+  #   models.City.objects.create(name="西安_" + str(i), pro_id=1)
+  # return HttpResponse('OK')
+  pro_list = models.Province.objects.all()
+  return render(request, 'menus.html', {'pro_list': pro_list})
+
+# 城市
+def fetch_city(request):
+  # 根据省份id获取相关的城市
+  # rep = {'status': 200, 'error': None, 'data': None}
+  
+  province_id = request.GET.get('province_id')
+  # 查找
+  result = models.City.objects.filter(pro_id=province_id).values('id', 'name')
+  # QuerySet -> 内部放置对象
+  # https://www.cnblogs.com/linxiyue/p/4040262.html
+  result = list(result)
+  # 发给页面json格式数据
+  data = json.dumps(result)
+  return HttpResponse(data)
+
+# 县
+def fetch_xian(request):
+  city_id = request.GET.get('city_id')
+  result = models.Xian.objects.filter(cy_id=city_id).values('id', 'name')
+  result = list(result)
+  return HttpResponse(json.dumps(result))
