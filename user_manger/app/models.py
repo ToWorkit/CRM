@@ -37,3 +37,19 @@ class Administrator(models.Model):
   username = models.CharField(max_length=32)
   password = models.CharField(max_length=32)
 
+
+# 三级联动
+# 省
+class Province(models.Model):
+  name = models.CharField(max_length=32)
+
+# 市
+class City(models.Model):
+  name = models.CharField(max_length=32)
+  # 一对多
+  pro = models.ForeignKey('Province', on_delete=models.CASCADE)
+
+# 县
+class Xian(models.Model):
+  name = models.CharField(max_length=32)
+  cy = models.ForeignKey('City', on_delete=models.CASCADE)

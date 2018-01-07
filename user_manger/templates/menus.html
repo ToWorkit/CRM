@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block content %}
+  <h1>三级联动</h1>
+  <select name="" id="province">
+    <option value="-1">请选择省份</option>
+    {% for p in pro_list %}
+      <option value="{{ p.id }}">{{ p.name }}</option>
+    {% endfor %}
+  </select>
+  <select name="" id="city">
+    <option value="-1">请选择城市</option>
+  </select>
+  <select name="" id="xian">
+    <option value="-1">请选择县</option>
+  </select>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

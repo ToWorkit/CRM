@@ -250,6 +250,24 @@ def handle_student(request):
     else:
         return redirect('/index.html')
 
+@auth
+def edit_student(request):
+  if request.method == 'GET':
+    # 班級列表前20
+    cls_list = models.Classes.objects.all()[:20]
+    nid = request.GET.get('nid')
+    # 根据id查找
+    # obj = models.Student.objects.filter(id=nid)[0]
+    obj = models.Student.objects.get(id=nid)
+    # print(obj)
+    return render(request, 'edit_student.html', {'cls_list': cls_list, 'obj': obj})
+  elif request.method == 'POST':
+    nid = request.POST.get('id')
+    name = request.POST.get('name')
+    email = request.POST.get('email')
+    cls_id = request.POST.get('cls_id')
+    models.Student.objects.filter(id=nid).update(name=name, email=email, cls_id=cls_id)
+    return redirect('/student.html')
 
 
 def handle_teacher(request):
@@ -259,3 +277,11 @@ def handle_teacher(request):
         return render(request, 'teacher.html', {'username': current_user})
     else:
         return redirect('/login.html')
+
+# menu
+def meun(request):
+  for i in range(10):
+    models.Province.objects.create(name="陕西_" + str(i))
+  for i in range(5):
+    models.City.objects.create(name="西安_" + str(i))
+  return HttpResponse('OK')
