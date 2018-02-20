@@ -269,14 +269,10 @@ def edit_student(request):
     models.Student.objects.filter(id=nid).update(name=name, email=email, cls_id=cls_id)
     return redirect('/student.html')
 
-
+@auth
 def handle_teacher(request):
-    is_login = request.session.get('is_login')
-    if is_login:
-        current_user = request.session.get('username')
-        return render(request, 'teacher.html', {'username': current_user})
-    else:
-        return redirect('/login.html')
+    current_user = request.session.get('username')
+    return render(request, 'teacher.html', {'username': current_user})
 
 # menu
 def menu(request):
