@@ -78,10 +78,6 @@ class CustomerFollowUp(models.Model):
     return "<%s : %s>" %(self.customer.qq, self.intention)
 
 
-class UserProfile(models.Model):
-  '''账号表'''
-  pass
-
 class Course(models.Model):
   '''课程表'''
   # 唯一
@@ -158,14 +154,23 @@ class CourseRecord(models.Model):
     return '%s %s' % (self.from_class, self.day_num)
 
   # 联合唯一
-
+  class Meta:
+    unique_together = ('from_class', 'day_num')
 
 class StudyRecord(models.Model):
   '''学习记录'''
-  pass
+  # 学生
+  student = models.ForeignKey('Enrollment')
+  # 上课记录
+  course_record = models.ForeignKey('CourseRecord')
+
 
 class Enrollment(models.Model):
   '''报名表'''
+  pass
+
+class UserProfile(models.Model):
+  '''账号表'''
   pass
 
 class Role(models.Model):
