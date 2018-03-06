@@ -98,7 +98,11 @@ class Course(models.Model):
 
 class Branch(models.Model):
   '''校区'''
-
+  name = models.CharField(max_length = 128, unique = True)
+  # 地址
+  addr = models.CharField(max_length = 128)
+  def __str__(self):
+    return self.name 
 
 class ClassList(models.Model):
   '''班级表'''
