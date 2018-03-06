@@ -140,13 +140,25 @@ class CourseRecord(models.Model):
   # 哪个班级
   from_class = models.ForeignKey('ClassList', verbose_name = '班级')
   # 第几次
-  dat_num = models.PositiveSmallIntegerField(verbose_name = '第几节(天)')
+  day_num = models.PositiveSmallIntegerField(verbose_name = '第几节(天)')
   # 老师
   teacher = models.ForeignKey('UserProfile')
   # 有没有作业
   has_homework = models.BooleanField(default = True)
-  # 作业
+  # 作业标题
   homework_title = models.CharField(max_length = 128, blank = True, null = True)
+  # 作业内容
+  homework_content = models.TextField(blank = True, null = True)
+  # 课程大纲
+  outline = models.TextField(verbose_name = '本节课程大纲')
+  # 上课时间
+  date = models.DateField(auto_now_add = True)
+  # 实例静态化(print 时自动调用，方便调试)
+  def __str__(self):
+    return '%s %s' % (self.from_class, self.day_num)
+
+  # 联合唯一
+
 
 class StudyRecord(models.Model):
   '''学习记录'''
