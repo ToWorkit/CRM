@@ -96,6 +96,7 @@ class Course(models.Model):
   def __str__(self):
     return self.name
 
+
 class Branch(models.Model):
   '''校区'''
   name = models.CharField(max_length = 128, unique = True)
@@ -104,16 +105,24 @@ class Branch(models.Model):
   def __str__(self):
     return self.name 
 
+
 class ClassList(models.Model):
   '''班级表'''
   # 校区， 多对多的关系
   branch = models.ManyToManyField('')
   # 关联课程表
   course = models.ForeignKey('Course')
+  # 班级类型
+  class_type_choices = (
+    (0, '面授(脱产)'),
+    (1, '面授(周末)'),
+    (2, '网络班')
+    )
   # 学期
   semester = models.PositiveSmallIntegerField(verbose_name = '学期')
   # 老师(一个老师对应多个学生，一个学生也可以对应多个老师) -> 多对多的关系
   teachers = models.ManyToManyField('UserProfile')
+
 
 class CourseRecord(models.Model):
   '''上课记录'''
