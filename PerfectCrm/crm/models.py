@@ -4,7 +4,7 @@ from django.db import models
 
 class Customer(models.Model):
   '''客户信息表'''
-  # 字节，设置Django的admin可以不填写(为了保存时可以通过检测，仅仅限制admin而非数据库属性)，可为空(首次接触不一定告诉姓名)
+  # 字节，blank -> 设置Django的admin可以不填写(为了保存时可以通过检测，仅仅限制admin而非数据库属性)，可为空(首次接触不一定告诉姓名)
   name = models.CharField(max_length = 32, blank = True, null = True)
   # unique -> 唯一
   qq = models.CharField(max_length = 64, unique = True)
@@ -134,9 +134,19 @@ class ClassList(models.Model):
   class Meta:
     unique_together = ('branch', 'course', 'semester')
 
+
 class CourseRecord(models.Model):
   '''上课记录'''
-  pass
+  # 哪个班级
+  from_class = models.ForeignKey('ClassList', verbose_name = '班级')
+  # 第几次
+  dat_num = models.PositiveSmallIntegerField(verbose_name = '第几节(天)')
+  # 老师
+  teacher = models.ForeignKey('UserProfile')
+  # 有没有作业
+  has_homework = models.BooleanField(default = True)
+  # 作业
+  homework_title = models.CharField(max_length = 128, blank = True, null = True)
 
 class StudyRecord(models.Model):
   '''学习记录'''
