@@ -40,7 +40,7 @@ class Customer(models.Model):
   # 时间(自动添加当前时间)
   date = models.DateTimeField(auto_now_add = True)
 
-  # 关联数据，其他表关联当前表时可以获取qq(因为qq是唯一的，可以通过qq进行查询当前表获取更多的数据)
+  # 实力静态化，对外开放qq
   def __str__(self):
     return self.qq
 
@@ -108,9 +108,9 @@ class Branch(models.Model):
 
 class ClassList(models.Model):
   '''班级表'''
-  # 校区， 多对多的关系
-  branch = models.ManyToManyField('')
-  # 关联课程表
+  # 校区
+  branch = models.ForeignKey('Branch', verbose_name = '校区')
+  # 课程表
   course = models.ForeignKey('Course')
   # 班级类型
   class_type_choices = (
@@ -118,11 +118,21 @@ class ClassList(models.Model):
     (1, '面授(周末)'),
     (2, '网络班')
     )
+  class_type = models.SmallIntegerField(choices = class_type_choices, verbose_name = '班级类型')
   # 学期
   semester = models.PositiveSmallIntegerField(verbose_name = '学期')
   # 老师(一个老师对应多个学生，一个学生也可以对应多个老师) -> 多对多的关系
   teachers = models.ManyToManyField('UserProfile')
+  # 开班时间
+  start_date = models.DateField(verbose_name = '开班日期')
+  end_date = models.DateField(verbose_name = '结业日期', blank = True, null = True)
 
+  def __str__(self):
+    return "%s %s %s" % (self.branch, self.course, self.semester)
+
+  # 联合唯一 -> 同一个校区的同一门课程只能有一个 1 期，下一期就为 2 期，不允许再为 1 期
+  class Meta:
+    unique_together = ('branch', 'course', 'semester')
 
 class CourseRecord(models.Model):
   '''上课记录'''
