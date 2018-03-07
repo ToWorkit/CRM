@@ -1,4 +1,6 @@
 from django.db import models
+# django 自带的验证模块 
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -200,12 +202,41 @@ class Enrollment(models.Model):
   # 关联账号表
   # 接待该客户的销售人员
   consultant = models.ForeignKey('UserProfile', verbose_name = '课程顾问')
-  
+  # 合同, 默认为False, 同意后为True
+  contract_agreed = models.BooleanField(default = False, verbose_name = '学员已同意合同条款')
+  contract_approved = models.BooleanField(default = False, verbose_name = '学校已同意合同条款')
+  # 精确到 时分
+  date = models.DateTimeField(auto_now_add = True)
+  def __str__(self):
+    return '%s %s' % (self.customer, self.enrolled_class)
+  # 联合唯一
+  class Meta:
+    # 一个学员只能报一期
+    unique_together = ('customer', 'enrolled_class')
+
+
+class Payment(models.Model):
+  '''缴费记录'''
+  # 关联客户表
+  customer = models.ForeignKey('Customer')
+  # 关联课程
+  course = models.ForeignKey('Course', verbose_name = '所报课程')
+  # 大数字，不能使用Small
+  amount = models.PositiveIntegerField(verbose_name = '数额', default = 500)
+  # 接待顾问(办理的人)
+  consultant = models.ForeignKey('UserProfile')
+  date = models.DateTimeField(auto_now_add = True)
+  def __str__(self):
+    return '%s %s' % (self.customer, self.amount)
 
 class UserProfile(models.Model):
   '''账号表'''
-  pass
+  # 关联django自带的用户表, OneToOneField -> 单对单，各自有且仅有对方可以关联
+  user = models.OneToOneField(User)
+
 
 class Role(models.Model):
   '''角色表'''
-  pass
+  name = models.CharField(max_length = 32, unique = True)
+  def __str__(self):
+    return self.name
