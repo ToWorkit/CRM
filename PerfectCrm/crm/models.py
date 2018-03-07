@@ -5,6 +5,7 @@ from django.db import models
 class Customer(models.Model):
   '''客户信息表'''
   # 字节，blank -> 设置Django的admin可以不填写(为了保存时可以通过检测，仅仅限制admin而非数据库属性)，可为空(首次接触不一定告诉姓名)
+  # https://www.jianshu.com/p/c10be59aad7a
   name = models.CharField(max_length = 32, blank = True, null = True)
   # unique -> 唯一
   qq = models.CharField(max_length = 64, unique = True)
@@ -39,8 +40,8 @@ class Customer(models.Model):
   memo = models.TextField(blank = True, null = True)
   # 时间(自动添加当前时间)
   date = models.DateTimeField(auto_now_add = True)
-
-  # 实力静态化，对外开放qq
+  # 实力静态化，推荐写法，以防止页面上直接显示时出现 object 
+  # https://code.ziqiangxuetang.com/django/django-admin.html
   def __str__(self):
     return self.qq
 
@@ -88,7 +89,6 @@ class Course(models.Model):
   period = models.PositiveSmallIntegerField(verbose_name = '周期(月)')
   # 课程大纲
   outline = models.TextField()
-
   def __str__(self):
     return self.name
 
@@ -122,10 +122,8 @@ class ClassList(models.Model):
   # 开班时间
   start_date = models.DateField(verbose_name = '开班日期')
   end_date = models.DateField(verbose_name = '结业日期', blank = True, null = True)
-
   def __str__(self):
     return "%s %s %s" % (self.branch, self.course, self.semester)
-
   # 联合唯一 -> 同一个校区的同一门课程只能有一个 1 期，下一期就为 2 期，不允许再为 1 期
   class Meta:
     unique_together = ('branch', 'course', 'semester')
@@ -152,10 +150,10 @@ class CourseRecord(models.Model):
   # 实例静态化(print 时自动调用，方便调试)
   def __str__(self):
     return '%s %s' % (self.from_class, self.day_num)
-
   # 联合唯一
   class Meta:
     unique_together = ('from_class', 'day_num')
+
 
 class StudyRecord(models.Model):
   '''学习记录'''
@@ -163,11 +161,45 @@ class StudyRecord(models.Model):
   student = models.ForeignKey('Enrollment')
   # 上课记录
   course_record = models.ForeignKey('CourseRecord')
+  # 出勤记录
+  attendance_choices = (
+    (0, '已签到'),
+    (1, '迟到'),
+    (2, '缺勤'),
+    (3, '早退')
+    )
+  attendance = models.SmallIntegerField(choices = attendance_choices, default = 0, verbose_name = '出勤记录')
+  # 分数
+  score_choices = (
+    (100, 'A+'),
+    (90, 'A'),
+    (85, 'B+'),
+    (80, 'B'),
+    (75, 'B-'),
+    (70, 'C+'),
+    (60, 'C'),
+    (40, 'C-'),
+    (-50, 'D'),
+    (-100, 'COPY'),
+    (0, 'N/A')
+    )
+  score = models.SmallIntegerField(choices = score_choices, default = 0 verbose_name = '分数')
+  # 备注
+  memo = models.TextField(blank = True, null = True)
+  date = models.DateField(auto_now_add = True)
+  def __str__(self):
+    return "%s %s %s" %(self.student, self.course_record, self.score)
 
 
 class Enrollment(models.Model):
   '''报名表'''
-  pass
+  # 关联客户表
+  customer = models.ForeignKey('Customer')
+  # 关联班级表
+  enrolled_class = models.ForeignKey('ClassList', verbose_name = '所报班级')
+  # 关联账号表
+  # 接待该客户的销售人员
+  consultant = models.ForeignKey('UserProfile', verbose_name = '课程顾问')
 
 class UserProfile(models.Model):
   '''账号表'''
