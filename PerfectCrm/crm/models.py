@@ -200,6 +200,7 @@ class Enrollment(models.Model):
   # 关联账号表
   # 接待该客户的销售人员
   consultant = models.ForeignKey('UserProfile', verbose_name = '课程顾问')
+  
 
 class UserProfile(models.Model):
   '''账号表'''
