@@ -233,6 +233,11 @@ class UserProfile(models.Model):
   '''账号表'''
   # 关联django自带的用户表, OneToOneField -> 单对单，各自有且仅有对方可以关联
   user = models.OneToOneField(User)
+  name = models.CharField(max_length = 32, unique = True)
+  # 角色表, 多对多
+  roles = models.ManyToManyField('Role', blank = True, null = True)
+  def __str__(self):
+    return self.name
 
 
 class Role(models.Model):
