@@ -29,7 +29,7 @@ class Customer(models.Model):
   referral_from = models.CharField(verbose_name = '转介绍人qq', max_length = 64, blank = True, null = True)
 
   # 外键，与课程表建立连接
-  consult_course = models.ForeignKey('Course'. verbose_name = '咨询课程')
+  consult_course = models.ForeignKey('Course', verbose_name = '咨询课程', on_delete = models.CASCADE)
   # 文本内容，咨询的详情
   content = models.TextField(verbose_name = '咨询详情')
 
@@ -37,7 +37,7 @@ class Customer(models.Model):
   tags = models.ManyToManyField('Tag', blank = True, null = True)
   
   # 与账号表建立连接(分配账号)
-  consultant = models.ForeignKey('UserProfile')
+  consultant = models.ForeignKey('UserProfile', on_delete = models.CASCADE)
   # 备忘录
   memo = models.TextField(blank = True, null = True)
   # 时间(自动添加当前时间)
@@ -50,7 +50,7 @@ class Customer(models.Model):
 
 class Tag():
   '''客户标签'''
-  name = models.CharField(unique = True, max_length = 32)
+  name = models.CharField(max_length = 32, unique = True)
   # 对外关联表开放数据
   def __str__(self):
     return self.name
@@ -59,10 +59,10 @@ class Tag():
 class CustomerFollowUp(models.Model):
   '''客户跟进表'''
   # 管理客户信息表
-  customer = models.ForeignKey('Customer')
+  customer = models.ForeignKey('Customer', on_delete = models.CASCADE)
   content = models.TextField(verbose_name = '根据内容')
   # 账号信息
-  consultant = models.ForeignKey('UserProfile')
+  consultant = models.ForeignKey('UserProfile', on_delete = models.CASCADE)
   date = models.DateTimeField(auto_now_add = True)
   # 客户意向选择
   intention_choices = (
@@ -107,9 +107,9 @@ class Branch(models.Model):
 class ClassList(models.Model):
   '''班级表'''
   # 校区
-  branch = models.ForeignKey('Branch', verbose_name = '校区')
+  branch = models.ForeignKey('Branch', verbose_name = '校区', on_delete = models.CASCADE)
   # 课程表
-  course = models.ForeignKey('Course')
+  course = models.ForeignKey('Course', on_delete = models.CASCADE)
   # 班级类型
   class_type_choices = (
     (0, '面授(脱产)'),
@@ -134,11 +134,11 @@ class ClassList(models.Model):
 class CourseRecord(models.Model):
   '''上课记录'''
   # 哪个班级
-  from_class = models.ForeignKey('ClassList', verbose_name = '班级')
+  from_class = models.ForeignKey('ClassList', verbose_name = '班级', on_delete = models.CASCADE)
   # 第几次
   day_num = models.PositiveSmallIntegerField(verbose_name = '第几节(天)')
   # 老师
-  teacher = models.ForeignKey('UserProfile')
+  teacher = models.ForeignKey('UserProfile', on_delete = models.CASCADE)
   # 有没有作业
   has_homework = models.BooleanField(default = True)
   # 作业标题
@@ -160,9 +160,9 @@ class CourseRecord(models.Model):
 class StudyRecord(models.Model):
   '''学习记录'''
   # 学生
-  student = models.ForeignKey('Enrollment')
+  student = models.ForeignKey('Enrollment', on_delete = models.CASCADE)
   # 上课记录
-  course_record = models.ForeignKey('CourseRecord')
+  course_record = models.ForeignKey('CourseRecord', on_delete = models.CASCADE)
   # 出勤记录
   attendance_choices = (
     (0, '已签到'),
@@ -185,7 +185,7 @@ class StudyRecord(models.Model):
     (-100, 'COPY'),
     (0, 'N/A')
     )
-  score = models.SmallIntegerField(choices = score_choices, default = 0 verbose_name = '分数')
+  score = models.SmallIntegerField(choices = score_choices, default = 0, verbose_name = '分数')
   # 备注
   memo = models.TextField(blank = True, null = True)
   date = models.DateField(auto_now_add = True)
@@ -196,12 +196,12 @@ class StudyRecord(models.Model):
 class Enrollment(models.Model):
   '''报名表'''
   # 关联客户表
-  customer = models.ForeignKey('Customer')
+  customer = models.ForeignKey('Customer', on_delete = models.CASCADE)
   # 关联班级表
-  enrolled_class = models.ForeignKey('ClassList', verbose_name = '所报班级')
+  enrolled_class = models.ForeignKey('ClassList', verbose_name = '所报班级', on_delete = models.CASCADE)
   # 关联账号表
   # 接待该客户的销售人员
-  consultant = models.ForeignKey('UserProfile', verbose_name = '课程顾问')
+  consultant = models.ForeignKey('UserProfile', verbose_name = '课程顾问', on_delete = models.CASCADE)
   # 合同, 默认为False, 同意后为True
   contract_agreed = models.BooleanField(default = False, verbose_name = '学员已同意合同条款')
   contract_approved = models.BooleanField(default = False, verbose_name = '学校已同意合同条款')
@@ -218,13 +218,13 @@ class Enrollment(models.Model):
 class Payment(models.Model):
   '''缴费记录'''
   # 关联客户表
-  customer = models.ForeignKey('Customer')
+  customer = models.ForeignKey('Customer', on_delete = models.CASCADE)
   # 关联课程
-  course = models.ForeignKey('Course', verbose_name = '所报课程')
+  course = models.ForeignKey('Course', verbose_name = '所报课程', on_delete = models.CASCADE)
   # 大数字，不能使用Small
   amount = models.PositiveIntegerField(verbose_name = '数额', default = 500)
   # 接待顾问(办理的人)
-  consultant = models.ForeignKey('UserProfile')
+  consultant = models.ForeignKey('UserProfile', on_delete = models.CASCADE)
   date = models.DateTimeField(auto_now_add = True)
   def __str__(self):
     return '%s %s' % (self.customer, self.amount)
@@ -232,7 +232,7 @@ class Payment(models.Model):
 class UserProfile(models.Model):
   '''账号表'''
   # 关联django自带的用户表, OneToOneField -> 单对单，各自有且仅有对方可以关联
-  user = models.OneToOneField(User)
+  user = models.OneToOneField(User, on_delete = models.CASCADE)
   name = models.CharField(max_length = 32, unique = True)
   # 角色表, 多对多
   roles = models.ManyToManyField('Role', blank = True, null = True)

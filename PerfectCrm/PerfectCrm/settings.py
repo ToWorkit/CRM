@@ -84,12 +84,12 @@ WSGI_APPLICATION = 'PerfectCrm.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydatabase',
-        'USER': 'mydatabaseuser',
-        'PASSWORD': 'mypassword',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'perfectCrm',
+        'USER': 'root',
+        'PASSWORD': 'root',
         'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'PORT': '3306',
     }
 }
 
